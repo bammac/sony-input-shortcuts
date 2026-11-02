@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+}
+
+// One tiny app per TV input: opening it switches the TV to that input and closes itself.
+// Add one productFlavor per device, plus an app/src/<flavour>/res folder (see AGENT.md, step 4).
+android {
+    namespace 'local.inputshortcut'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        // The package that plays HDMI inputs on this TV (step 3 finds it). Empty: let Android pick.
+        buildConfigField 'String', 'TV_APP', '"com.sony.dtv.tvx"'
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    flavorDimensions 'input'
+    productFlavors {
+        // Copy this block per device. INPUT_ID is the HDMI port's hardware input from step 2, not a CEC child.
+        example {
+            dimension 'input'
+            applicationId 'local.inputshortcut.example'
+            buildConfigField 'String', 'INPUT_ID', '"com.sony.dtv.tvinput.external/.ExternalTvInputService/HW2"'   // HDMI 1
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
